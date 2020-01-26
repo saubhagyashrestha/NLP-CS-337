@@ -1,4 +1,5 @@
 Github Repo: https://github.com/saubhagyashrestha/NLP-CS-337.git
+Authors: Swapnanil Deb, Emily Jenkins, Saubhagya Shrestha
 
 General Overview:
 We take the dataset of tweets and first prune and group the data. As we go
@@ -22,6 +23,8 @@ winners, nominees, hosts, and presenters.
 
 What file(s) to run:
 
-What packages to download / where to find them:
 
-How to install them:
+What packages to download / where to find them:
+imdbpy:https://imdbpy.readthedocs.io/en/latest/
+numpy: https://numpy.org/
+nltk: https://www.nltk.org/
