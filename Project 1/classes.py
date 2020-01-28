@@ -4,6 +4,8 @@ class Tweet:
 	def __init__(self, text, tags):
 		self.tweet_text = text
 		self.tweet_tags = tags
+	def printTweet(self):
+		print([self.tweet_text,self.tweet_tags])
 
 # Instantiate Actor objects with name argument
 # e.g. actor_george = Actor("George Clooney")
@@ -35,4 +37,3 @@ class Award:
 	presenters = []
 	def __init__(self, name):
 		self.name = name
-	

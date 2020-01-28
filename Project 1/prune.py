@@ -1,5 +1,6 @@
 import json
 from classes import *
+
 from fuzzywuzzy import fuzz
 
 
@@ -20,7 +21,6 @@ def contains_key_words(text):
 
 def prune():
     TweetObjs = []
-    key_words = ["win", "nominee", "congrats", "best", "award", "goes to", "present", "host", "award for"]
     with open('gg2020.json', encoding="utf8") as f:
         for line in f:
             message = json.loads(line)
@@ -29,7 +29,6 @@ def prune():
             #pass text through tagger
             tweetobj = tagger(tweet)
 
+
             if len(tweetobj.tweet_tags) != [] and contains_key_words(tweetobj.tweet_text):
                 TweetObjs.append(tweetobj)
-
-    TweetObjs[0].printTweet()
