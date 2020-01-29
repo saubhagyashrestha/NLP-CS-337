@@ -29,8 +29,6 @@ def movie_filter(ent):
 def tagger(tweet):
 	doc = nlp(tweet)
 	#print([(X.text, X.label_) for X in doc.ents])
-	actor_bool= False
-	movie_bool = False
 	#print([(X, X.ent_iob_, X.ent_type_) for X in doc])
 	actor_filtered = list(filter(actor_filter, doc.ents))
 	movie_filtered = list(filter(movie_filter, doc.ents))
