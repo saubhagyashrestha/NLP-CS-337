@@ -1,4 +1,5 @@
 import json
+from tagger import tagger
 from classes import *
 import string
 
