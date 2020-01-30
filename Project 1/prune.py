@@ -14,8 +14,9 @@ def contains_key_words(text):
             return True
     return False
 
-def tagger(tweet):
-    return(Tweet(tweet,[]))
+def tag_wrapper(tweet):
+    tags = tagger(tweet)
+    return(Tweet(tweet,tags))
 
 def prune(file_name):
     TweetObjs = []
