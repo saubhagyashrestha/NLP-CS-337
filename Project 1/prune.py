@@ -28,7 +28,7 @@ def prune(file_name):
             tweet = message["text"]
             text = tweet.lower().translate(str.maketrans('', '', string.punctuation.replace("-", "")))
             #pass text through tagger
-            tweetobj = tagger(text)
+            tweetobj = tag_wrapper(text)
             #if len(tweetobj.tweet_tags) != [] and contains_key_words(tweetobj.tweet_text):
             if contains_key_words(tweetobj.tweet_text):
                 TweetObjs.append(tweetobj)
