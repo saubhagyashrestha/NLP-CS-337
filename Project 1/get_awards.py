@@ -1,26 +1,19 @@
-from prune import *
-
+import json
 
 #takes a file name and gets a list of awards from it
-def get_awards(file_name):
-    award_words = ["motion","picture","movie","tv","television","series","performance","director","actor","actress","drama","comedy","animated","foreign","original","score",
-    "song","cecil","demille","musical","role","supporting","limited","carol","burnett","best","language","award"]
+def get_awards():
+    relevant_tweets = []
+    with open('pruned_tweets.json',encoding="utf8") as infile:
+        for line in infile:
+            text = json.loads(line)['text']
+            relevant_tweets.append(text)
+    infile.close()
 
     start_and_end = ["best", "drama","comedy","television","series","picture","language","award","cecil","carol","animated"]
 
-    relevant_tweets_obj = prune(file_name)
-
     award_names = {}
-    award_tweets = []
 
-    for i in relevant_tweets_obj:
-        tweet = i.tweet_text
-        #print(tweet)
-        #print(set(tweet.split()))
-        #print(set(award_words))
-        if len(set(tweet.split()).intersection(set(award_words))) > 3:
-            award_tweets.append(tweet)
-    for text in award_tweets:
+    for text in relevant_tweets:
         start = float('inf')
         end = float('-inf')
         for key_word in start_and_end:
@@ -73,4 +66,4 @@ def get_awards(file_name):
         print(i)
 
 
-#get_awards('gg2020.json')
+get_awards()
