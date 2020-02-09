@@ -4,8 +4,23 @@ from spacy import displacy
 from collections import Counter
 import en_core_web_sm
 
+import probablepeople as pp
+
+# import nltk
+# from nltk.tokenize import word_tokenize
+# from nltk.tag import pos_tag
+
 nlp = en_core_web_sm.load()
 ia = IMDb()
+
+# pattern = 'NP: {<DT>?<JJ>*<NN>}'
+
+# def preprocess(sent):
+#     sent = nltk.word_tokenize(sent)
+#     sent = nltk.pos_tag(sent)
+#     cp = nltk.RegexpParser(pattern)
+#     cs = cp.parse(sent)
+#     return sent
 
 def actor_filter(ent):
 	if(ent.label_ == 'PERSON'):
@@ -34,6 +49,9 @@ def lower_it(name):
 
 def tagger(tweet):
 	doc = nlp(tweet)
+	print(pp.parse(tweet))
+	# sent = preprocess(tweet)
+	# print(sent)
 	#print([(X.text, X.label_) for X in doc.ents])
 	#print([(X, X.ent_iob_, X.ent_type_) for X in doc])
 	actor_filtered = list(filter(actor_filter, doc.ents))
