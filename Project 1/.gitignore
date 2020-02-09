@@ -3,3 +3,9 @@ test.json
 pruned_tweets.json
 gg2013.json
 gg2015.json
+pruned_tweets_2020.json
+pruned_tweets_2013.json
+pruned_tweets_2015.json
+pruned_tweets_best_2020.json
+pruned_tweets_best_2015.json
+pruned_tweets_best_2013.json
