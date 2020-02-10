@@ -1,6 +1,7 @@
 import json
 from classes import *
 import string
+from tagger import tagger
 
 
 def contains_key_words(text):
@@ -31,14 +32,18 @@ def prune(year):
             text1 = text.lower().translate(str.maketrans('', '', string.punctuation.replace("-", "")))
             #pass text through tagger
             #if len(tweetobj.tweet_tags) != [] and contains_key_words(tweetobj.tweet_text):
-            if contains_key_words(text1):
-                tweet_dic = {}
-                tweet_dic['text'] = text
-                pruned_tweets.append(tweet_dic)
-            if 'best' in text1.split():
-                tweet_dic = {}
-                tweet_dic['text'] = text
-                pruned_tweets_best.append(tweet_dic)
+            ckw = contains_key_words(text1)
+            best_present = text1.find('best')
+            if ckw or best_present != -1:
+                # tags = tagger(text)
+                if ckw:
+                    tweet_dic = {}
+                    tweet_dic['text'] = text
+                    pruned_tweets.append(tweet_dic)
+                if best_present != -1:
+                    tweet_dic = {}
+                    tweet_dic['text'] = text
+                    pruned_tweets_best.append(tweet_dic)            
     infile.close()
 
     name = 'pruned_tweets_' + year + '.json'
