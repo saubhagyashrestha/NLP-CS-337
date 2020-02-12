@@ -7,11 +7,7 @@ import en_core_web_sm
 import json
 # from fuzzywuzzy import fuzz
 
-from tmdbv3api import TMDb
-from tmdbv3api import Discover
-from tmdbv3api import Movie
-tmdb = TMDb()
-tmdb.api_key = '5c25bb6fa9590f49afafbb9fe8c3be4a'
+
 
 import time
 # import probablepeople as pp
@@ -74,7 +70,23 @@ def lower_it(name):
 	return name.lower()
 
 def tagger(tweet, mov_list):
-	
+	entity_word_whitelist = ["score", "motion picture", "film", "present"]
+	actor_white_list = False
+	for word in entity_word_whitelist:
+		if(tweet.find(word) != -1):
+			actor_white_list = True
+	movies = []
+	mov_list_lower = map(lower_it, map(str, mov_list))
+	for movie in mov_list_lower:
+		tweet_lower = str(tweet).lower()
+		contains = movie in tweet_lower
+		if(contains):
+			movies.append(movie)
+			break
+
+	movie_names = list(map(lower_it, map(str, movies)))
+	if(len(movie_names) != 0 and not actor_white_list):
+		return [[] , movie_names]
 
 	doc = nlp(tweet)
 	# sent = preprocess(tweet)
@@ -84,16 +96,7 @@ def tagger(tweet, mov_list):
 	actor_filtered = list(filter(actor_filter, doc.ents))
 	actor_names = list(map(lower_it, map(str,actor_filtered)))
 
-	movies = []
-	mov_list_lower = map(lower_it, map(str, mov_list))
-	for movie in mov_list_lower:
-		tweet_lower = str(tweet).lower()
-		contains = movie in tweet_lower
-		if(contains):
-			movies.append(movie)
-			break
 	
-	movie_names = list(map(lower_it, map(str, movies)))
 	#print(actor_filtered)
 	#if(len(actor_filtered) > 0 and len(movie_filtered) > 0):
 	#	return ['actor', 'movie']
@@ -106,83 +109,85 @@ def tagger(tweet, mov_list):
 
 
 
-def prune_tag(year, award_list):
-	start = time.time()
-	nomin_count = 0
-	lst = []
-	final_lst = []
-	year_int = int(year)
-	last_year = str(year_int -1)
-	start_date = str(last_year) + '-01-01'
-	end_date = str(last_year) + '-12-31'
-	discover = Discover()
-	count = 1
-	mov_list = []
-	while(count < 15):
-		curr_list = discover.discover_movies({
-			'primary_release_year': last_year,
-			'page': count
-		})
-		mov_list.append(curr_list)
-		count += 1
-	count = 0
-	while(count < 10):
-		curr_list = discover.discover_tv_shows({
-			'air_date.gte': start_date,
-			'air_date.lte': end_date
-		})
-		mov_list.append(curr_list)
-		count += 1
+# def prune_tag(year, award_list):
+# 	start = time.time()
+# 	nomin_count = 0
+# 	lst = []
+# 	final_lst = []
+# 	year_int = int(year)
+# 	last_year = str(year_int -1)
+# 	start_date = str(last_year) + '-01-01'
+# 	end_date = str(last_year) + '-12-31'
+# 	discover = Discover()
+# 	count = 1
+# 	mov_list = []
+# 	while(count < 12):
+# 		curr_list = discover.discover_movies({
+# 			'primary_release_year': last_year,
+# 			'page': count
+# 		})
+# 		mov_list.append(curr_list)
+# 		count += 1
+# 	count = 0
+# 	while(count < 10):
+# 		curr_list = discover.discover_tv_shows({
+# 			'air_date.gte': start_date,
+# 			'air_date.lte': end_date
+# 		})
+# 		mov_list.append(curr_list)
+# 		count += 1
 
-	flat_list = []
-	for sublist in mov_list:
-		for item in sublist:
-			flat_list.append(item)
-	mov_list = flat_list
-	# mov_list = map(strip_accents, mov_list)
-	file_name_1 = 'pruned_tweets_best_' + year +'.json'
-	with open(file_name_1,encoding="utf8") as infile:
-		for line in infile:
-			text = json.loads(line)['text']
-			lst.append(text.lower())
-	infile.close()
+# 	flat_list = []
+# 	for sublist in mov_list:
+# 		for item in sublist:
+# 			flat_list.append(item)
+# 	mov_list = flat_list
+# 	# mov_list = map(strip_accents, mov_list)
+# 	file_name_1 = 'pruned_tweets_best_' + year +'.json'
+# 	with open(file_name_1,encoding="utf8") as infile:
+# 		for line in infile:
+# 			text = json.loads(line)['text']
+# 			lst.append(text.lower())
+# 	infile.close()
 
-	file_name_2 = 'pruned_tweets_' + year +'.json'
-	with open(file_name_2,encoding="utf8") as infile:
-		for line in infile:
-			text = json.loads(line)['text']
-			lst.append(text.lower())
-	infile.close()
+# 	file_name_2 = 'pruned_tweets_' + year +'.json'
+# 	with open(file_name_2,encoding="utf8") as infile:
+# 		for line in infile:
+# 			text = json.loads(line)['text']
+# 			lst.append(text.lower())
+# 	infile.close()
 
-	for tweet in lst:
-		for award in award_list:
-			award = award.lower()
-			# ratio = fuzz.partial_ratio(str(award), str(tweet))
-			# nomin_contains = 'nomin' in tweet
-			# if(nomin_contains):
-			# 	nomin_count += 1
-			# contains = award in tweet
-			contains = partial_award_check(award, tweet)
-			if(contains):
-				 # print(tweet)
-			# if(ratio > 80):
-				tags = tagger(tweet, mov_list)
-				tweet_dic = {}
-				tweet_dic['text'] = tweet
-				tweet_dic['tags'] = tags
-				final_lst.append(tweet_dic)
-				break
+# 	for tweet in lst:
+# 		for award in award_list:
+# 			award = award.lower()
+# 			# ratio = fuzz.partial_ratio(str(award), str(tweet))
+# 			# nomin_contains = 'nomin' in tweet
+# 			# if(nomin_contains):
+# 			# 	nomin_count += 1
+# 			# contains = award in tweet
+# 			contains = partial_award_check(award, tweet)
+# 			if(contains):
+# 				 # print(tweet)
+# 			# if(ratio > 80):
+# 				tags = tagger(tweet, mov_list)
+# 				if(len(tags[0]) == 0 and len(tags[1]) == 0):
+# 					break
+# 				tweet_dic = {}
+# 				tweet_dic['text'] = tweet
+# 				tweet_dic['tags'] = tags
+# 				final_lst.append(tweet_dic)
+# 				break
 
-	name = 'tagged_tweets_' + year + '.json'
-	with open(name,'w') as outfile:
-		for tweet in final_lst:
-			json.dump(tweet, outfile)
-			outfile.write('\n')
-		outfile.close()
-	end = time.time()
-	total = end-start
-	print("******************" + year + " ****" + str(total))
-	# print(nomin_count)
+# 	name = 'tagged_tweets_' + year + '.json'
+# 	with open(name,'w') as outfile:
+# 		for tweet in final_lst:
+# 			json.dump(tweet, outfile)
+# 			outfile.write('\n')
+# 		outfile.close()
+# 	end = time.time()
+# 	total = end-start
+# 	print("******************" + year + " ****" + str(total))
+# 	# print(nomin_count)
 
 
 

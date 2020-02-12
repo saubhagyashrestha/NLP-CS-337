@@ -27,7 +27,11 @@ def get_curr_index(name, lst):
 
 def clean_votes(award, vote_list):
 	actor_contain = 'performance' in award or 'director' in award or 'screenplay' in award or 'score' in award or 'actor' in award or 'actress' in award
+	if(not actor_contain):
+		actor_contain = award in PEOPLE_AWARDS
 	mov_contain = 'motion picture' in award or 'feature' in award or 'film' in award
+	if(not mov_contain):
+		mov_contain = award in ENTITY_AWARDS
 	tv_contain = 'television' in award
 	cleaned_votes = []
 	if(actor_contain):
@@ -71,21 +75,28 @@ def clean_votes(award, vote_list):
 
 
 def voter(year, award_list):
-	print("HUHHHHHHH")
+	plst = []
+	file_name_1 = 'presenter_tweets_' + year +'.json'
+	with open(file_name_1,encoding="utf8") as infile:
+		for line in infile:
+			tweet = json.loads(line)
+			plst.append(tweet)
+	infile.close()
 
 	lst = []
-	award_list = []
 	file_name_2 = 'tagged_tweets_' + year +'.json'
 	with open(file_name_2,encoding="utf8") as infile:
 		for line in infile:
 			tweet = json.loads(line)
 			lst.append(tweet)
 	infile.close()
-	print("HUH3")
+
+	voting_result = {}
 
 	for award in award_list:
+		winner = ""
 		curr_votes_list = []
-		award = award.lower()
+		# x`award = award.lower()
 		# try:
 		# 	people_bool = PEOPLE_AWARDS.index(award)
 		# except:
@@ -94,11 +105,7 @@ def voter(year, award_list):
 		# 	mov_bool = ENTITY_AWARDS.index(award)
 		# except:
 		# 	mov_bool = -1
-		
-		print("HUH")
-		
 		for tweet in lst:
-			print("HUH2")
 			tweet_text = tweet["text"]
 			tweet_tags = tweet["tags"]
 			people = tweet_tags[0]
@@ -106,7 +113,6 @@ def voter(year, award_list):
 			# contains = award in tweet_text
 			contains = partial_award_check(award.lower(), tweet_text)
 			if(contains):
-
 				for person in people:
 					ind = get_curr_index(person, curr_votes_list)
 					if(ind != -1):
@@ -134,30 +140,79 @@ def voter(year, award_list):
 					# 	else:
 					# 		curr_votes_list.append([movie, 1])
 		cleaned_votes_list = clean_votes(award, curr_votes_list)
-		print(award + "*****" )
-		print(curr_votes_list)
-		print(award + " cleaned *************")
-		print(cleaned_votes_list)
+		# print(award + "*****" )
+		# print(curr_votes_list)
+		# print(award + " cleaned *************")
+		# print(cleaned_votes_list)
 
-		sorted_listed = cleaned_votes_list.sort(key=vote_sort, reverse=True)
-		print(sorted_listed)
+		cleaned_votes_list.sort(key=vote_sort, reverse=True)
 		count = 0
 		nominees_list = []
-		for vote in sorted_listed:
+		for vote in cleaned_votes_list:
 			if(count == 5):
 				break
 			nominees_list.append(vote[0])
 			count += 1
-		winner = nominees_list[0]
-		print(winner)
+		# if(len(nominees_list) == 0):
+		# 	print("******Award: "+ award)
+		# 	print("******no winners")
+		# 	continue
+		if(len(nominees_list) != 0):
+			winner = nominees_list[0]
+		presenters = present_voter(plst, award, nominees_list)
 		x = {
-			award:{
 				"nominees":nominees_list,
+				"presenters":presenters,
 				"winner": winner
 			}
-		}
+		voting_result[award] = x
+		print(award + "***")
 		print(x)
+	print("***********" + year + "******* Result")
+	print(voting_result)
+	return voting_result
 
+
+def present_voter(tweets, award, nom_list):
+	
+	curr_votes_list = []
+	for tweet in tweets:
+		tweet_text = tweet["text"]
+		tweet_tags = tweet["tags"]
+		people = tweet_tags[0]
+		# contains = award in tweet_text
+		contains = partial_award_check(award.lower(), tweet_text)
+		if(contains):
+			for person in people:
+				ind = get_curr_index(person, curr_votes_list)
+				if(ind != -1):
+					curr_votes_list[ind][1] = curr_votes_list[ind][1] + 1
+				else:
+					curr_votes_list.append([person, 1])
+	cleaned_votes = []
+	for vote in curr_votes_list:
+		text = vote[0]
+		person = Person()
+		result = person.search(text)
+		if(len(result) > 0):
+			res = str(result[0])
+			if(res in nom_list):
+				continue
+			ind = get_curr_index(res, cleaned_votes)
+			if(ind != -1):
+				cleaned_votes[ind][1] = cleaned_votes[ind][1] + vote[1]
+			else:
+				cleaned_votes.append([res, vote[1]])
+
+	cleaned_votes.sort(key=vote_sort, reverse=True)
+	count = 0
+	presenters_list = []
+	for vote in cleaned_votes:
+		if(count == 1):
+			break
+		presenters_list.append(vote[0])
+		count += 1
+	return presenters_list
 
 
 
