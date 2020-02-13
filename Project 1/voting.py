@@ -76,6 +76,7 @@ def clean_votes(award, vote_list):
 
 def voter(year, award_list):
 	plst = []
+	year = str(year)
 	file_name_1 = 'presenter_tweets_' + year +'.json'
 	with open(file_name_1,encoding="utf8") as infile:
 		for line in infile:
@@ -166,11 +167,18 @@ def voter(year, award_list):
 				"winner": winner
 			}
 		voting_result[award] = x
-		print(award + "***")
-		print(x)
-	print("***********" + year + "******* Result")
-	print(voting_result)
-	return voting_result
+		#print(award + "***")
+		#print(x)
+	#print("***********" + year + "******* Result")
+	#print(voting_result)
+	#print("Writing the voting_results for ", year, " to a results json.")
+	out_name = 'voting_results_' + str(year) + '.json'
+	with open(out_name,'w') as outfile:
+		#print("lalalal")
+		#print(voting_result)
+		json.dump(voting_result, outfile)
+	outfile.close()
+	#return voting_result
 
 
 def present_voter(tweets, award, nom_list):

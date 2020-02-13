@@ -4,6 +4,7 @@ from spacy import displacy
 from collections import Counter
 import en_core_web_sm
 from nltk import word_tokenize, pos_tag
+import nltk
 import string
 import re
 from collections import deque
@@ -11,6 +12,8 @@ import time
 from emoji import UNICODE_EMOJI
 
 nlp = en_core_web_sm.load()
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 
 def get_tags(sentence):
     tokens = word_tokenize(sentence)
@@ -24,36 +27,19 @@ def has_emoji(word):
     return False
 
 
-def get_awards(year):
+def get_awards_fun(year):
     year = str(year)
-    OFFICIAL_AWARDS = []
-    if year == '2020':
-        OFFICIAL_AWARDS = ['best motion picture - drama', 'best motion picture - musical or comedy', 'best performance by an actress in a motion picture - drama',
-        'best performance by an actor in a motion picture - drama', 'best performance by an actress in a motion picture - musical or comedy',
-        'best performance by an actor in a motion picture - musical or comedy', 'best performance by an actress in a supporting role in any motion picture',
-        'best performance by an actor in a supporting role in any motion picture', 'best director - motion picture', 'best screenplay - motion picture',
-        'best motion picture - animated', 'best motion picture - foreign language', 'best original score - motion picture', 'best original song - motion picture',
-        'best television series - drama', 'best television series - musical or comedy', 'best television limited series or motion picture made for television',
-        'best performance by an actress in a limited series or a motion picture made for television',
-        'best performance by an actor in a limited series or a motion picture made for television',
-        'best performance by an actress in a television series - drama', 'best performance by an actor in a television series - drama',
-        'best performance by an actress in a television series - musical or comedy', 'best performance by an actor in a television series - musical or comedy',
-        'best performance by an actress in a supporting role in a series, limited series or motion picture made for television',
-        'best performance by an actor in a supporting role in a series, limited series or motion picture made for television', 'cecil b. demille award', 'carol burnett award']
-    else:
-        OFFICIAL_AWARDS = ['cecil b. demille award', 'best motion picture - drama', 'best performance by an actress in a motion picture - drama', 'best performance by an actor in a motion picture - drama', 'best motion picture - comedy or musical', 'best performance by an actress in a motion picture - comedy or musical', 'best performance by an actor in a motion picture - comedy or musical', 'best animated feature film', 'best foreign language film', 'best performance by an actress in a supporting role in a motion picture', 'best performance by an actor in a supporting role in a motion picture', 'best director - motion picture', 'best screenplay - motion picture', 'best original score - motion picture', 'best original song - motion picture', 'best television series - drama', 'best performance by an actress in a television series - drama', 'best performance by an actor in a television series - drama', 'best television series - comedy or musical', 'best performance by an actress in a television series - comedy or musical', 'best performance by an actor in a television series - comedy or musical', 'best mini-series or motion picture made for television', 'best performance by an actress in a mini-series or motion picture made for television', 'best performance by an actor in a mini-series or motion picture made for television', 'best performance by an actress in a supporting role in a series, mini-series or motion picture made for television', 'best performance by an actor in a supporting role in a series, mini-series or motion picture made for television']
-
     ll = []
-    for i in OFFICIAL_AWARDS:
-        lll = pos_tag(word_tokenize(i))
-        for ii in lll:
-            if ii[1] not in ll:
-                ll.append(ii[1])
-    print(ll)
+    #for i in OFFICIAL_AWARDS:
+    #    lll = pos_tag(word_tokenize(i))
+    #    for ii in lll:
+    #        if ii[1] not in ll:
+    #            ll.append(ii[1])
+    #print(ll)
 
     lst = []
-    print("**************STARTED " + year + "********************")
-    startt = time.time()
+    #print("**************STARTED " + year + "********************")
+    #startt = time.time()
 
     file_name = 'pruned_tweets_best_' + year +'.json'
     with open(file_name,encoding="utf8") as infile:
@@ -64,9 +50,9 @@ def get_awards(year):
 
     infile.close()
     point = time.time()
-    print(point-startt, " seconds since the start")
+    #print(point-startt, " seconds since the start")
 
-    print(len(lst))
+    #print(len(lst))
 
     verb_conj = ["goes", "awarded", "went", "to", "and", "but", "at", "with", "on", "is", "https", "http", "win", "won", "wins", "award", "...", "#"]
     in_word = ['http']
@@ -173,55 +159,57 @@ def get_awards(year):
                     potential_awards[p_name] = 1
 
 
-    point = time.time()
+    #point = time.time()
 
-    print(point-startt, " seconds to do trim")
-    print("There are ", len(potential_awards), " potential awards")
+    #print(point-startt, " seconds to do trim")
+    #print("There are ", len(potential_awards), " potential awards")
 
 
 
-    countt = 0
-    print("HERE are the direct matches: ")
-    for name,value in potential_awards.items():
-        if name in OFFICIAL_AWARDS:
-            print(name,value)
-            countt += 1
-    print("There are ", countt, " of them.")
-
+    #countt = 0
+    #print("HERE are the direct matches: ")
+    #for name,value in potential_awards.items():
+    #    if name in OFFICIAL_AWARDS:
+    #        print(name,value)
+    #        countt += 1
+    #print("There are ", countt, " of them.")
+    #print(potential_awards)
     p_names = []
     booger = []
     for name,value in potential_awards.items():
         splitted = name.split()
 
-        for o_name in OFFICIAL_AWARDS:
-            if o_name in name and o_name not in booger:
-                booger.append(o_name)
-            if o_name in name and o_name != name:
-                print("Improve trim: ", name)
-
+        #for o_name in OFFICIAL_AWARDS:
+        #    if o_name in name and o_name not in booger:
+        #        booger.append(o_name)
+        #    if o_name in name and o_name != name:
+        #        print("Improve trim: ", name)
         if value > 1 and len(splitted) > 3 and pos_tag(word_tokenize(splitted[1]))[0][1] in ['NN', 'VBN', 'JJ', 'NNS']:
             p_names.append([name,value])
+        #except:
+        #    pass
+    #print(p_names)
 
-    point = time.time()
-    print(point-startt, " seconds since the start")
+    #point = time.time()
+    #print(point-startt, " seconds since the start")
 
-    print("Potential award names ending determined by verb_conj, puncuation, pronouns")
-    print("In the potential names, there exists " , len(booger), " perfect award names somewhere in there")
+    #print("Potential award names ending determined by verb_conj, puncuation, pronouns")
+    #print("In the potential names, there exists " , len(booger), " perfect award names somewhere in there")
 
     p_names.sort(key = lambda x: -x[1])
 
     countt = 0
-    print("HERE are the direct matches: ")
-    for x in p_names:
-        if x[0] in OFFICIAL_AWARDS:
-            print(x)
-            countt += 1
-    print("There are ", countt, " of them.")
+    #print("HERE are the direct matches: ")
+    #for x in p_names:
+    #    if x[0] in OFFICIAL_AWARDS:
+    #        print(x)
+    #        countt += 1
+    #print("There are ", countt, " of them.")
 
 
-    print("\nWe have a total of ", len(p_names), " potential awards.\nHere are the top half of them: ")
-    for ind in range(int(len(p_names)/2)):
-        print("FIRST CUT: ", p_names[ind])
+    #print("\nWe have a total of ", len(p_names), " potential awards.\nHere are the top half of them: ")
+    #for ind in range(int(len(p_names)/2)):
+    #    print("FIRST CUT: ", p_names[ind])
 
 #############################################################################################################################################
     #prune list of possible awards
@@ -244,22 +232,22 @@ def get_awards(year):
                     if pair[0][-1] != "–" and pair[0][-1] != "," and pair[0][-1] != " ":
                         newlst.append(pair)
 
-    print("\nWe have now taken out awards with specific words such as on, from, golden, globes")
-    print("Last word also has to be a noun and cannot end in a punctuation")
-    point = time.time()
-    print(point-startt, " seconds since the start")
+    #print("\nWe have now taken out awards with specific words such as on, from, golden, globes")
+    #print("Last word also has to be a noun and cannot end in a punctuation")
+    #point = time.time()
+    #print(point-startt, " seconds since the start")
 
-    countt = 0
-    print("HERE are the direct matches: ")
-    for x in newlst:
-        if x[0] in OFFICIAL_AWARDS:
-            print(x)
-            countt += 1
-    print("There are ", countt, " of them.")
+    #countt = 0
+    #print("HERE are the direct matches: ")
+    #for x in newlst:
+    #    if x[0] in OFFICIAL_AWARDS:
+    #        print(x)
+    #        countt += 1
+    #print("There are ", countt, " of them.")
 
-    print("\nWe have a total of ", len(newlst), " potential awards.\nHere are the top half of them: ")
-    for ind in range(len(newlst)):
-        print("SECOND CUT: ", newlst[ind])
+    #print("\nWe have a total of ", len(newlst), " potential awards.\nHere are the top half of them: ")
+    #for ind in range(len(newlst)):
+    #    print("SECOND CUT: ", newlst[ind])
 
 #############################################################################################################################################
 
@@ -274,17 +262,17 @@ def get_awards(year):
 
     newlst_key = newlst[:27]
 
-    print("\n\nModified list!! by adding value for keywords")
-    point = time.time()
-    print(point-startt, " seconds since the start")
+    #print("\n\nModified list!! by adding value for keywords")
+    #point = time.time()
+    #print(point-startt, " seconds since the start")
 
-    print("There are not a total of ", len(newlst_key), " of them.\n Here they are: ")
-    for x in newlst_key:
-        print(x)
+    #print("There are not a total of ", len(newlst_key), " of them.\n Here they are: ")
+    #for x in newlst_key:
+    #    print(x)
 
 #############################################################################################################################################
 
-    print("\n\nTagging them with spacy now...")
+    #print("\n\nTagging them with spacy now...")
     newlst_key_spac = []
     for x in newlst_key:
         if nlp(x[0]).ents:
@@ -292,27 +280,29 @@ def get_awards(year):
         else:
             newlst_key_spac.append(x)
 
-    point = time.time()
-    print(point-startt, " seconds since the start")
-    print("There are not a total of ", len(newlst_key_spac), " of them.\n Here they are: ")
-    for x in newlst_key_spac:
-        print(x)
+    #point = time.time()
+    #print(point-startt, " seconds since the start")
+    #print("There are not a total of ", len(newlst_key_spac), " of them.\n Here they are: ")
+    #for x in newlst_key_spac:
+    #    print(x)
 
 #############################################################################################################################################
 
-    matches = []
-    for i in OFFICIAL_AWARDS:
-        for j in newlst_key:
-            if i == j[0]:
-                matches.append(j)
+    #matches = []
+    #for i in OFFICIAL_AWARDS:
+    #    for j in newlst_key:
+    #        if i == j[0]:
+    #            matches.append(j)
 
-    print("\nThere are now ", len(matches), " perfect matches.")
-    for pair in matches: #.items():
-        print("Found perfect match for : ",  pair[0], "Value: ", pair[1])
-    print("\n")
-    names = [x[0] for x in matches]
-    for jj in OFFICIAL_AWARDS:
-        if jj not in names:
-            print("not found: ", jj)
-
+    #print("\nThere are now ", len(matches), " perfect matches.")
+    #for pair in matches: #.items():
+    #    print("Found perfect match for : ",  pair[0], "Value: ", pair[1])
+    #print("\n")
+    names = [x[0] for x in newlst_key_spac]
+    #print(newlst_key)
+    #print(newlst_key_spac)
+    #for jj in OFFICIAL_AWARDS:
+    #    if jj not in names:
+    #        print("not found: ", jj)
+    #print(names)
     return names

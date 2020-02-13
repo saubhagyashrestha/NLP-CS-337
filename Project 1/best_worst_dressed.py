@@ -36,7 +36,7 @@ def tagger(tweet):
 
 def redcarpet(year):
     start_time = time.time()
-    print("JUST STARTED")
+    #print("JUST STARTED")
     year = str(year)
     lst = []
     file_name = 'pruned_tweets_red_carpet_' + year +'.json'
@@ -48,7 +48,7 @@ def redcarpet(year):
 
     infile.close()
 
-    print(time.time() - start_time, " seconds to load file")
+    #print(time.time() - start_time, " seconds to load file")
 
     key_words_red_carpet = {"best", "dressed", "worst", "beautiful", "stunning", "ugly", "bad", "amazing"}
 
@@ -58,15 +58,15 @@ def redcarpet(year):
         if len(set(slt).intersection(key_words_red_carpet)) > 1:
             relevant_tweets.append(tweet)
 
-    print(time.time() - start_time, " seconds to check for intersection")
-    print("\nnow we have ", len(relevant_tweets), "relevant tweets after checking for more than one word present.\n")
+    #print(time.time() - start_time, " seconds to check for intersection")
+    #print("\nnow we have ", len(relevant_tweets), "relevant tweets after checking for more than one word present.\n")
 
     if len(relevant_tweets) > 1000:
         relevant_tweets = sample(relevant_tweets, 1000)
 
-    print("now there are ", len(relevant_tweets))
+    #print("now there are ", len(relevant_tweets))
 
-    print("\n\nTagging them with spacy now...")
+    #print("\n\nTagging them with spacy now...")
     ppl_sent = {}
     for tweet in relevant_tweets:
         ppl_lst = tagger(tweet)
@@ -82,7 +82,7 @@ def redcarpet(year):
                     ppl_sent[person][0].append(tweet)
                     ppl_sent[person][3] += 1
 
-    print(time.time() - start_time, " seconds to run spacy")
+    #print(time.time() - start_time, " seconds to run spacy")
 
     ppl_sent = {k: v for k, v in sorted(ppl_sent.items(), key=lambda item: -item[1][3])}
     count = 0

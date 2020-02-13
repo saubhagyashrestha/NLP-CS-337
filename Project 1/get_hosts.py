@@ -10,7 +10,6 @@ from collections import deque
 import time
 from emoji import UNICODE_EMOJI
 import itertools
-#from itertools import islice
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
@@ -63,14 +62,7 @@ def hosts(year):
     yikes = False
 
     while countt < len(relevant_tweets):
-        if "tina fey" in relevant_tweets[countt] or "tina" in relevant_tweets[countt]:
-            yikes = True
-            #print(relevant_tweets[countt] + "\n")
-            tinacount += 1
         ppl_lst = tagger(relevant_tweets[countt])
-        if yikes:
-            #print(ppl_lst)
-            yikes = False
         if ppl_lst != []:
             for person in ppl_lst:
                 if "'" in person:
@@ -87,14 +79,7 @@ def hosts(year):
                     shorter_list.append([person, 1])
         countt += 1
 
-    #for item in shorter_list:
-    #    if "'" in item[0]:
-    #        item[0] = item[0][:item[0].index("'")]
-    #    if "’" in item[0]:
-    #        item[0] = item[0][:item[0].index("’")]
-
     shorter_list.sort(key = lambda x: -x[1])
-    #print(shorter_list)
     shorter_list = shorter_list[:10]
 
     curr = len(shorter_list)-1
@@ -120,12 +105,12 @@ def hosts(year):
             new_shorter_list.append([name,score])
         curr -= 1
 
-    #print("PRINTING NEW SHORTER LIST\n")
     new_shorter_list.sort(key = lambda x: -x[1])
-    #for x in new_shorter_list:
-    #    print(x)
+
 
     if new_shorter_list[0][1] > 4 * new_shorter_list[1][1]:
-        print("Host is", new_shorter_list[0][0].title())
+        #print("Host is", new_shorter_list[0][0].title())
+        return [new_shorter_list[0][0].title()]
     else:
-        print("Hosts are", new_shorter_list[0][0].title(), "and", new_shorter_list[1][0].title())
+        return [new_shorter_list[0][0].title(),new_shorter_list[1][0].title()]
+        #print("Hosts are", new_shorter_list[0][0].title(), "and", new_shorter_list[1][0].title())

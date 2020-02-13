@@ -75,94 +75,96 @@ def movie_list_gen(year):
 
 
 def contains_key_words(text):
-    #this list of words needs to be added to
-    key_words = ["wins", "win", "won", "winner", "nominate", "nomimated", "nominee", "lost", "award", "awarded", "awards", "present", "presenter", "presents", "presented", "host",
-    "hosts", "hosted","best", "goes to", "gave", "announce", "announced", "introduce", "introduced"]
-    key_words_red_carpet = ["best", "worst", "dressed"]
+	#this list of words needs to be added to
+	key_words = ["wins", "win", "won", "winner", "nominate", "nomimated", "nominee", "lost", "award", "awarded", "awards", "present", "presenter", "presents", "presented", "host",
+	"hosts", "hosted","best", "goes to", "gave", "announce", "announced", "introduce", "introduced"]
+	key_words_red_carpet = ["best", "worst", "dressed"]
 
-    text = text.split()
-    for i in key_words:
-        if i in text: # and len(set(text).intersection(set(award_words))) > 3:
-            return True
-    return False
+	text = text.split()
+	for i in key_words:
+		if i in text: # and len(set(text).intersection(set(award_words))) > 3:
+			return True
+	return False
 
 def contains_key_words_red_carpet(text):
-    key_words_red_carpet = ["best", "worst", "dressed"]
-    text = text.split()
-    for i in key_words_red_carpet:
-        if i in text: # and len(set(text).intersection(set(award_words))) > 3:
-            return True
-    return False
+	key_words_red_carpet = ["best", "worst", "dressed"]
+	text = text.split()
+	for i in key_words_red_carpet:
+		if i in text: # and len(set(text).intersection(set(award_words))) > 3:
+			return True
+	return False
 
-def prune(year):
+def prune(year, award_list):
 	start = time.time()
-    year = str(year)
-    pruned_tweets = []
-    pruned_tweets_best = []
-    pruned_tweets_red_carpet = []
-    present_tweets = []
-    file_name = 'gg' + year + '.json'
-    with open(file_name,encoding="utf8") as infile:
-        dic = {}
-        for line in infile:
-            dic = json.loads(line)
-            #get the text
-        for message in dic:
-            #message = json.loads(line)
-            #get the text
-            text = message["text"]
-            text1 = text.lower().translate(str.maketrans('', '', string.punctuation.replace("-", "")))
-            #pass text through tagger
-            #if len(tweetobj.tweet_tags) != [] and contains_key_words(tweetobj.tweet_text):
-            pres_contain = text1.find('present')
-            if(pres_contain != -1):
+	year = str(year)
+	pruned_tweets = []
+	pruned_tweets_best = []
+	pruned_tweets_red_carpet = []
+	present_tweets = []
+	tagged_tweets = []
+	file_name = 'gg' + year + '.json'
+	mov_list = movie_list_gen(year)
+	with open(file_name,encoding="utf8") as infile:
+		dic = {}
+		for line in infile:
+			dic = json.loads(line)
+			#get the text
+		for message in dic:
+			#message = json.loads(line)
+			#get the text
+			text = message["text"]
+			text1 = text.lower().translate(str.maketrans('', '', string.punctuation.replace("-", "")))
+			#pass text through tagger
+			#if len(tweetobj.tweet_tags) != [] and contains_key_words(tweetobj.tweet_text):
+			pres_contain = text1.find('present')
+			if(pres_contain != -1):
 				tag_tweet = prune_tag(text, year, award_list, mov_list)
 				if(tag_tweet != {}):
 					present_tweets.append(tag_tweet)
-            if contains_key_words(text1):
-            	if(pres_contain == -1):
+			if contains_key_words(text1):
+				if(pres_contain == -1):
 					tag_tweet = prune_tag(text, year, award_list, mov_list)
-                tweet_dic = {}
-                tweet_dic['text'] = text
-                pruned_tweets.append(tweet_dic)
-                if(tag_tweet != {}):
+				tweet_dic = {}
+				tweet_dic['text'] = text
+				pruned_tweets.append(tweet_dic)
+				if(tag_tweet != {}):
 					tagged_tweets.append(tag_tweet)
-            if 'best' in text1.split():
-            	if(pres_contain == -1 and not 'best' in text1.split()):
+			if 'best' in text1.split():
+				if(pres_contain == -1 and not 'best' in text1.split()):
 					tag_tweet = prune_tag(text, year, award_list, mov_list)
-                tweet_dic = {}
-                tweet_dic['text'] = text
-                pruned_tweets_best.append(tweet_dic)
-                if(tag_tweet != {}):
+				tweet_dic = {}
+				tweet_dic['text'] = text
+				pruned_tweets_best.append(tweet_dic)
+				if(tag_tweet != {}):
 					tagged_tweets.append(tag_tweet)
-            if contains_key_words_red_carpet(text1):
-                tweet_dic = {}
-                tweet_dic['text'] = text1
-                pruned_tweets_red_carpet.append(tweet_dic)
-    infile.close()
+			if contains_key_words_red_carpet(text1):
+				tweet_dic = {}
+				tweet_dic['text'] = text1
+				pruned_tweets_red_carpet.append(tweet_dic)
+	infile.close()
 
-    name = 'pruned_tweets_' + year + '.json'
-    with open(name,'w') as outfile:
-        for tweet in pruned_tweets:
-            json.dump(tweet, outfile)
-            outfile.write('\n')
-    outfile.close()
+	name = 'pruned_tweets_' + year + '.json'
+	with open(name,'w') as outfile:
+		for tweet in pruned_tweets:
+			json.dump(tweet, outfile)
+			outfile.write('\n')
+	outfile.close()
 
-    name2 = 'pruned_tweets_best_' + year + '.json'
-    with open(name2,'w') as outfile:
-        for tweet in pruned_tweets_best:
-            json.dump(tweet, outfile)
-            outfile.write('\n')
-    outfile.close()
+	name2 = 'pruned_tweets_best_' + year + '.json'
+	with open(name2,'w') as outfile:
+		for tweet in pruned_tweets_best:
+			json.dump(tweet, outfile)
+			outfile.write('\n')
+	outfile.close()
 
-    name3 = 'pruned_tweets_red_carpet_' + year + '.json'
-    with open(name3,'w') as outfile:
-        for tweet in pruned_tweets_red_carpet:
-            json.dump(tweet, outfile)
-            outfile.write('\n')
-    outfile.close()
+	name3 = 'pruned_tweets_red_carpet_' + year + '.json'
+	with open(name3,'w') as outfile:
+		for tweet in pruned_tweets_red_carpet:
+			json.dump(tweet, outfile)
+			outfile.write('\n')
+	outfile.close()
 
-    name4 = 'tagged_tweets_' + year + '.json'
+	name4 = 'tagged_tweets_' + year + '.json'
 	with open(name4,'w') as outfile:
 		for tweet in tagged_tweets:
 			json.dump(tweet, outfile)

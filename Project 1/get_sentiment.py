@@ -3,8 +3,6 @@ import en_core_web_sm
 from nltk import word_tokenize, pos_tag
 import time
 
-
-
 nlp = en_core_web_sm.load()
 
 def get_tags(sentence):
@@ -44,7 +42,7 @@ def get_sentiments(year):
                     break
     infile.close()
 
-    print(len(lst), "TOTAL TWEETS WE ARE LOOKING AT")
+    #print(len(lst), "TOTAL TWEETS WE ARE LOOKING AT")
 
     political_statement = []
     best_acceptance_speech = []
@@ -153,12 +151,13 @@ def get_sentiments(year):
     snubbed_actors.sort(key=lambda x: -x[1])
 
 
+    sentiment_lst = ["Biggest Snub: " + snubbed_actors[0][0].title(), "Most Deserving Win: " + deserving_actors[0][0].title(), "Funniest Joke Delivery: " + funny_jokes[0][0].title(), "Best Acceptance Speech: " + best_acceptance_speech[0][0].title(), "Biggest Political Statement: " + political_statement[0][0].title()]
+    
+    #print("Biggest Snub: ", snubbed_actors[0][0].title())
+    #print("Most Deserving Win: ", deserving_actors[0][0].title())
+    #print("Funniest Joke Delivery: ", funny_jokes[0][0].title())
+    #print("Best Acceptance Speech: ", best_acceptance_speech[0][0].title())
+    #print("Biggest Political Statement: ", political_statement[0][0].title())
+    #print(time.time() - start, " seconds since beginning")
 
-    print("Biggest Snub: ", snubbed_actors[0][0].title())
-    print("Most Deserving Win: ", deserving_actors[0][0].title())
-    print("Funniest Joke Delivery: ", funny_jokes[0][0].title())
-    print("Best Acceptance Speech: ", best_acceptance_speech[0][0].title())
-    print("Biggest Political Statement: ", political_statement[0][0].title())
-    print(time.time() - start, " seconds since beginning")
-
-get_sentiments(2015)
+    return sentiment_lst
