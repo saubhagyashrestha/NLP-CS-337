@@ -26,6 +26,6 @@ srsly==1.0.1
 thinc==7.3.1
 tmdbv3api==1.5.1
 tqdm==4.42.0
-urllib3==1.25.8
+urllib3==1.26.5
 wasabi==0.6.0
 wincertstore==0.2
